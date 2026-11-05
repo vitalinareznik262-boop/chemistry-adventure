@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Місія: врятувати Періодичну систему!</title>
+<style>
+:root {
+  --purple:#8b45a5;
+  --pink:#d94d9c;
+  --blue:#38a9c5;
+  --dark:#263047;
+  --green:#3caa79;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:var(--dark);
+  background:linear-gradient(140deg,#e9e2fa,#e4f6f5);
+  min-height:100vh;
+}
+header{
+  text-align:center;
+  padding:24px 14px 10px;
+}
+header h1{
+  color:var(--purple);
+  margin:5px 0;
+  font-size:clamp(25px,5vw,39px);
+}
+header p{margin:8px;color:#59647b}
+main{
+  width:min(760px,94%);
+  margin:15px auto 45px;
+}
+.panel{
+  background:white;
+  border-radius:22px;
+  padding:clamp(18px,4vw,30px);
+  box-shadow:0 12px 35px #55447720;
+}
+.hidden{display:none!important}
+input{
+  width:100%;
+  padding:14px;
+  border:2px solid #ded5ed;
+  border-radius:12px;
+  font-size:17px;
+  margin:10px 0;
+}
+button{
+  border:0;
+  border-radius:12px;
+  padding:13px 19px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  background:var(--purple);
+  color:white;
+  margin:5px 3px;
+}
+button:hover{filter:brightness(1.08)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.secondary{background:var(--blue)}
+.answer{
+  display:block;
+  width:100%;
+  text-align:left;
+  background:#f1edf8;
+  color:var(--dark);
+  border:2px solid transparent;
+  margin:9px 0;
+  padding:15px;
+}
+.answer:hover{border-color:var(--purple)}
+.answer.correct{background:#e2f6eb;border-color:var(--green)}
+.answer.wrong{background:#fff0e9;border-color:#e28b63}
+.progress{
+  height:11px;
+  background:#eee9f4;
+  border-radius:20px;
+  overflow:hidden;
+  margin:15px 0;
+}
+#progressBar{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--pink),var(--blue));
+  transition:width .3s;
+}
+.meta{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  color:#69738a;
+  font-size:14px;
+}
+.story{
+  background:#f8f4fc;
+  border-left:5px solid var(--pink);
+  border-radius:12px;
+  padding:16px;
+  line-height:1.55;
+  margin:18px 0;
+}
+.question{font-size:20px;line-height:1.4}
+#feedback{
+  padding:14px;
+  margin-top:12px;
+  border-radius:12px;
+  line-height:1.5;
+}
+.good{background:#e2f6eb}
+.bad{background:#fff0e9}
+footer{text-align:center;color:#778097;padding:15px;font-size:13px}
+table{width:100%;border-collapse:collapse;margin-top:15px;font-size:14px}
+th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+th{background:#f3edf8}
+.small{font-size:13px;color:#788096}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧪 Місія: врятувати Періодичну систему!</h1>
+  <p>Навчальна пригода з хімії · 7 клас</p>
+</header>
+
+<main>
+<section id="start" class="panel">
+  <h2>🔬 Ласкаво просимо до лабораторії!</h2>
+  <p>У лабораторії сталася надзвичайна подія: Хаос переплутав відомості про хімічні елементи.</p>
+  <p>Допоможи професорці Елементії відновити Періодичну систему. На тебе чекають 20 випробувань!</p>
+  <label for="studentName"><b>Введи своє ім'я або псевдонім:</b></label>
+  <input id="studentName" maxlength="30" placeholder="Наприклад, Дослідник">
+  <button onclick="startGame()">Почати місію 🚀</button>
+  <button class="secondary" onclick="showTeacher()">Кабінет учителя</button>
+  <p class="small">Результати цієї версії зберігаються в браузері на цьому пристрої.</p>
+</section>
+
+<section id="game" class="panel hidden">
+  <div class="meta">
+    <span id="playerLabel"></span>
+    <span id="scoreLabel">Бали: 0</span>
+  </div>
+  <div class="progress"><div id="progressBar"></div></div>
+  <div class="meta">
+    <span id="sceneLabel">Сцена 1 із 20</span>
+    <span id="topicLabel"></span>
+  </div>
+  <div class="story" id="story"></div>
+  <h2 class="question" id="question"></h2>
+  <div id="answers"></div>
+  <div id="feedback" class="hidden"></div>
+  <button id="nextBtn" class="hidden" onclick="nextScene()">Продовжити ➜</button>
+  <button class="secondary" onclick="saveAndExit()">Зберегти й вийти</button>
+</section>
+
+<section id="ending" class="panel hidden">
+  <h2 id="endingTitle"></h2>
+  <p id="endingText"></p>
+  <h3 id="endingScore"></h3>
+  <button onclick="restartGame()">Пройти місію ще раз</button>
+  <button class="secondary" onclick="showTeacher()">Кабінет учителя</button>
+</section>
+
+<section id="teacher" class="panel hidden">
+  <h2>📊 Кабінет учителя</h2>
+  <p>Результати проходжень, збережені в цьому браузері.</p>
+  <div id="stats"></div>
+  <button onclick="exportResults()">Завантажити CSV</button>
+  <button class="secondary" onclick="clearResults()">Очистити результати</button>
+  <button class="secondary" onclick="showStart()">На головну</button>
+  <p class="small">Це демонстраційний режим без пароля. Для спільної статистики класу потрібна база даних.</p>
+</section>
+</main>
+
+<footer>Навчальна гра за матеріалами § 7 підручника з хімії</footer>
+
+<script>
+const scenes = [
+{
+topic:"Вступ",
+story:"Професорка Елементія зустрічає тебе біля великого екрана. На ньому з'являються перші відомості про Періодичну таблицю.",
+q:"Що відображає Періодична таблиця?",
+a:["Перелік відомих хімічних елементів та їхню класифікацію","Перелік усіх хімічних реакцій","Лише назви лабораторного обладнання"],
+c:0,why:"Періодична таблиця є своєрідним переліком хімічних елементів і відображає їхню класифікацію."
+},
+{
+topic:"Історія",
+story:"Робот Хімікс знайшов старе зображення першого варіанта Періодичної таблиці.",
+q:"Скільки елементів містив перший варіант таблиці, про який розповідає підручник?",
+a:["18","63","118"],
+c:1,why:"Перший варіант таблиці містив 63 відомі на той час хімічні елементи."
+},
+{
+topic:"Історія",
+story:"На екрані з'являється сучасна таблиця. Хаос намагається переконати тебе, що в ній лише 63 елементи.",
+q:"Скільки хімічних елементів містить сучасна Періодична таблиця за підручником?",
+a:["63","100","118"],
+c:2,why:"У підручнику зазначено, що Періодична таблиця містить 118 хімічних елементів."
+},
+{
+topic:"Призначення",
+story:"Професорка просить пояснити, навіщо хімікам потрібна таблиця.",
+q:"Чому Періодична таблиця важлива?",
+a:["Вона допомагає виявляти закономірності та класифікувати елементи","Вона замінює всі хімічні досліди","Вона містить тільки назви речовин"],
+c:0,why:"За допомогою таблиці можна виявляти закономірності та класифікувати хімічні елементи."
+},
+{
+topic:"Структура",
+story:"Перед тобою таблиця, у якій переплутано горизонтальні ряди та вертикальні стовпчики.",
+q:"Скільки періодів має Періодична таблиця?",
+a:["7","8","18"],
+c:0,why:"У Періодичній таблиці є 7 періодів."
+},
+{
+topic:"Структура",
+story:"Робот Хімікс показує вертикальні стовпчики.",
+q:"Скільки груп має Періодична таблиця?",
+a:["7","18","118"],
+c:1,why:"У Періодичній таблиці є 18 груп."
+},
+{
+topic:"Структура",
+story:"На екрані блимають горизонтальні ряди. Потрібно повернути їм правильну назву.",
+q:"Як називають горизонтальні ряди Періодичної таблиці?",
+a:["Групи","Періоди","Клітинки"],
+c:1,why:"Горизонтальні ряди називають періодами."
+},
+{
+topic:"Структура",
+story:"Тепер потрібно відновити назву вертикальних стовпчиків.",
+q:"Як називають вертикальні стовпчики Періодичної таблиці?",
+a:["Періоди","Групи","Ряди"],
+c:1,why:"Вертикальні стовпчики називають групами."
+},
+{
+topic:"Порядок",
+story:"Хаос перемішав картки елементів. Професорка нагадує принцип розташування елементів.",
+q:"У якому порядку розміщені елементи в Періодичній таблиці?",
+a:["За збільшенням зарядів ядер атомів","За кольором символів","За довжиною назв"],
+c:0,why:"Елементи розміщені за збільшенням зарядів ядер атомів."
+},
+{
+topic:"Періоди",
+story:"Ти бачиш довгий ряд елементів і маєш визначити, до якої частини таблиці він належить.",
+q:"Елементи, об'єднані в горизонтальний ряд, утворюють...",
+a:["Групу","Період","Символ"],
+c:1,why:"Горизонтальний ряд елементів — це період."
+},
+{
+topic:"Групи",
+story:"На екрані виділено вертикальний стовпчик елементів.",
+q:"Елементи, об'єднані у вертикальний стовпчик, утворюють...",
+a:["Групу","Період","Порядковий номер"],
+c:0,why:"Вертикальний стовпчик елементів — це група."
+},
+{
+topic:"Клітинка",
+story:"Ти наблизив клітинку Гідрогену. У ній є кілька важливих позначень.",
+q:"Що позначає число 1 у клітинці Гідрогену?",
+a:["Порядковий номер","Відносну атомну масу","Номер періоду"],
+c:0,why:"У клітинці елемента число 1 — це його порядковий номер."
+},
+{
+topic:"Клітинка",
+story:"Робот показує літеру H у клітинці Гідрогену.",
+q:"Що позначає літера H?",
+a:["Назву групи","Символ хімічного елемента","Відносну атомну масу"],
+c:1,why:"H — символ хімічного елемента Гідрогену."
+},
+{
+topic:"Клітинка",
+story:"Потрібно знайти назву елемента, символ якого H.",
+q:"Який елемент має символ H?",
+a:["Гелій","Гідроген","Оксиген"],
+c:1,why:"H — символ Гідрогену."
+},
+{
+topic:"Оксиген",
+story:"Професорка Елементія дає особливе завдання: знайти Оксиген у Періодичній таблиці.",
+q:"Який порядковий номер має Оксиген?",
+a:["1","8","16"],
+c:1,why:"Оксиген має порядковий номер 8."
+},
+{
+topic:"Оксиген",
+story:"Ти знайшов Оксиген. Тепер потрібно визначити його місце в таблиці.",
+q:"У якому періоді розташований Оксиген?",
+a:["1-му","2-му","3-му"],
+c:1,why:"Оксиген розташований у 2-му періоді."
+},
+{
+topic:"Оксиген",
+story:"Залишилося визначити групу Оксигену.",
+q:"У якій групі розташований Оксиген?",
+a:["8-й","16-й","18-й"],
+c:1,why:"Оксиген розташований у 16-й групі."
+},
+{
+topic:"Класифікація",
+story:"Хаос розфарбував таблицю. Професорка пояснює, що елементи поділяють на дві великі категорії.",
+q:"На які дві групи поділяють хімічні елементи за наведеним у параграфі поділом?",
+a:["Тверді та рідкі","Металічні та неметалічні","Прості та складні"],
+c:1,why:"У параграфі розглянуто поділ хімічних елементів на металічні та неметалічні."
+},
+{
+topic:"Класифікація",
+story:"На схемі виділено ділянки металічних і неметалічних елементів.",
+q:"Яким кольором на малюнку 7.3 позначено неметалічні елементи?",
+a:["Жовтим","Сірим","Синім"],
+c:0,why:"На малюнку 7.3 неметалічні елементи позначено жовтим кольором."
+},
+{
+topic:"Фінал",
+story:"Останнє випробування! Професорка нагадує: поділ елементів на металічні й неметалічні має певні особливості.",
+q:"Чи є поділ елементів на металічні й неметалічні абсолютно однозначним?",
+a:["Так, винятків немає","Ні, поділ умовний, деякі металічні елементи виявляють неметалічні властивості","Цей поділ не використовують"],
+c:1,why:"Підручник наголошує, що такий поділ умовний: деякі металічні елементи певною мірою виявляють неметалічні властивості."
+}
+];
+
+let current=0, score=0, player="", locked=false, correctCount=0;
+let answersLog=[];
+
+function hideAll(){
+ ["start","game","ending","teacher"].forEach(id=>
+ document.getElementById(id).classList.add("hidden"));
+}
+
+function startGame(){
+ player=document.getElementById("studentName").value.trim()||"Дослідник";
+ current=0;
+ score=0;
+ correctCount=0;
+ answersLog=[];
+ document.getElementById("playerLabel").textContent="🧑 "+player;
+ hideAll();
+ document.getElementById("game").classList.remove("hidden");
+ renderScene();
+}
+
+function renderScene(){
+ locked=false;
+ const s=scenes[current];
+ document.getElementById("sceneLabel").textContent=`Сцена ${current+1} із ${scenes.length}`;
+ document.getElementById("topicLabel").textContent=s.topic;
+ document.getElementById("scoreLabel").textContent="Бали: "+score;
+ document.getElementById("progressBar").style.width=(current/scenes.length*100)+"%";
+ document.getElementById("story").textContent=s.story;
+ document.getElementById("question").textContent=s.q;
+ document.getElementById("feedback").className="hidden";
+ document.getElementById("nextBtn").classList.add("hidden");
+
+ const box=document.getElementById("answers");
+ box.innerHTML="";
+
+ s.a.forEach((answer,i)=>{
+   const b=document.createElement("button");
+   b.className="answer";
+   b.textContent=(i+1)+". "+answer;
+   b.onclick=()=>chooseAnswer(i,b);
+   box.appendChild(b);
+ });
+}
+
+function chooseAnswer(index,button){
+ if(locked)return;
+ locked=true;
+
+ const s=scenes[current];
+ const buttons=[...document.querySelectorAll(".answer")];
+
+ buttons.forEach((b,i)=>{
+   b.disabled=true;
+   if(i===s.c)b.classList.add("correct");
+ });
+
+ const ok=index===s.c;
+
+ if(ok){
+   score+=1;
+   correctCount++;
+ }else{
+   button.classList.add("wrong");
+ }
+
+ answersLog.push({scene:current+1,correct:ok});
+
+ document.getElementById("scoreLabel").textContent="Бали: "+score;
+
+ const feedback=document.getElementById("feedback");
+ feedback.className=ok?"good":"bad";
+ feedback.textContent=(ok?"✅ Правильно! ":"💡 Спробуй запам'ятати. ")+s.why;
+
+ document.getElementById("nextBtn").classList.remove("hidden");
+ document.getElementById("nextBtn").textContent=
+ current===scenes.length-1?"Побачити фінал 🏆":"Продовжити ➜";
+}
+
+function nextScene(){
+ if(!locked)return;
+ current++;
+ if(current>=scenes.length){
+   finishGame();
+   return;
+ }
+ renderScene();
+}
+
+function finishGame(){
+ hideAll();
+ document.getElementById("ending").classList.remove("hidden");
+
+ let title,text;
+ const percent=correctCount/scenes.length;
+
+ if(percent>=0.9){
+   title="🏆 Майстер Періодичної системи!";
+   text="Ти чудово впорався з місією! Періодична система відновлена.";
+ }else if(percent>=0.75){
+   title="🔬 Дослідник елементів!";
+   text="Ти добре орієнтуєшся в таблиці та її характеристиках.";
+ }else if(percent>=0.6){
+   title="🧭 Знавець структури!";
+   text="Ти розумієш основні частини таблиці. Продовжуй дослідження!";
+ }else if(percent>=0.4){
+   title="🧪 Юний класифікатор!";
+   text="Ти вже зробив важливі відкриття. Повтори матеріал і спробуй ще раз.";
+ }else{
+   title="🌱 Початківець-хімік!";
+   text="Місію завершено! Повтори § 7 і повернися до лабораторії.";
+ }
+
+ document.getElementById("endingTitle").textContent=title;
+ document.getElementById("endingText").textContent=text;
+ document.getElementById("endingScore").textContent=
+ `Твій результат: ${correctCount} із ${scenes.length} правильних відповідей`;
+
+ const results=JSON.parse(localStorage.getItem("chemResults")||"[]");
+
+ results.push({
+   name:player,
+   score,
+   total:scenes.length,
+   correct:correctCount,
+   ending:title,
+   date:new Date().toLocaleString("uk-UA")
+ });
+
+ localStorage.setItem("chemResults",JSON.stringify(results));
+ document.getElementById("progressBar").style.width="100%";
+}
+
+function restartGame(){
+ document.getElementById("studentName").value=player;
+ hideAll();
+ document.getElementById("start").classList.remove("hidden");
+}
+
+function saveAndExit(){
+ localStorage.setItem("chemProgress",JSON.stringify({
+   player,current,score,correctCount,answersLog
+ }));
+ alert("Прогрес збережено в цьому браузері.");
+ showStart();
+}
+
+function showStart(){
+ hideAll();
+ document.getElementById("start").classList.remove("hidden");
+}
+
+function showTeacher(){
+ hideAll();
+ document.getElementById("teacher").classList.remove("hidden");
+
+ const data=JSON.parse(localStorage.getItem("chemResults")||"[]");
+ const stats=document.getElementById("stats");
+
+ if(!data.length){
+   stats.innerHTML="<p>Поки що немає завершених проходжень.</p>";
+   return;
+ }
+
+ const avg=Math.round(
+   data.reduce((a,b)=>a+b.correct/b.total*100,0)/data.length
+ );
+
+ stats.innerHTML=
+ `<p><b>Проходжень:</b> ${data.length}</p>
+ <p><b>Середній результат:</b> ${avg}%</p>`;
+
+ const table=document.createElement("table");
+ table.innerHTML="<thead><tr><th>Учасник</th><th>Результат</th><th>Фінал</th><th>Дата</th></tr></thead>";
+
+ const body=document.createElement("tbody");
+
+ data.forEach(x=>{
+   const tr=document.createElement("tr");
+
+   [x.name,`${x.correct}/${x.total}`,x.ending,x.date].forEach(v=>{
+     const td=document.createElement("td");
+     td.textContent=v;
+     tr.appendChild(td);
+   });
+
+   body.appendChild(tr);
+ });
+
+ table.appendChild(body);
+ stats.appendChild(table);
+}
+
+function exportResults(){
+ const data=JSON.parse(localStorage.getItem("chemResults")||"[]");
+
+ if(!data.length){
+   alert("Немає результатів для експорту.");
+   return;
+ }
+
+ const rows=[
+   ["Учасник","Правильні відповіді","Усього","Фінал","Дата"],
+   ...data.map(x=>[x.name,x.correct,x.total,x.ending,x.date])
+ ];
+
+ const csv="\uFEFF"+rows.map(r=>
+   r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(";")
+ ).join("\n");
+
+ const url=URL.createObjectURL(
+   new Blob([csv],{type:"text/csv;charset=utf-8"})
+ );
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download="rezultaty-himiia.csv";
+ a.click();
+ URL.revokeObjectURL(url);
+}
+
+function clearResults(){
+ if(confirm("Видалити всі результати з цього браузера?")){
+   localStorage.removeItem("chemResults");
+   showTeacher();
+ }
+}
+</script>
+</body>
+</html>
