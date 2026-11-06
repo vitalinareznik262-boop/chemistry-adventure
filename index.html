@@ -1,101 +1,386 @@
-.scene-art {
-  min-height: 360px;
-  border-radius: 24px;
-  padding: 28px;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
 
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Країна добрих сердець</title>
+<style>
+:root {
+  --purple:#7655d9;
+  --pink:#ff83ad;
+  --blue:#65b9f4;
+  --yellow:#ffd66b;
+  --ink:#34304d;
+  --white:#ffffff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Trebuchet MS",Arial,sans-serif;
+  color:var(--ink);
   background:
-    linear-gradient(
-      0deg,
-      rgba(15, 12, 35, 0.88),
-      rgba(15, 12, 35, 0.08) 85%
-    ),
-    url("9c0aacf6-dc6a-4158-8890-6f6cd711fdf8.png")
-    center 45% / cover no-repeat;
+    radial-gradient(circle at 15% 15%,#fff4b9 0 5%,transparent 23%),
+    radial-gradient(circle at 90% 10%,#f7c8e8 0 6%,transparent 25%),
+    linear-gradient(145deg,#a8dfff,#d9c8ff 55%,#ffd6e6);
+  background-attachment:fixed;
+}
+button{font:inherit;cursor:pointer}
+#app{width:min(1050px,94%);margin:auto;padding:24px 0 45px}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;margin-bottom:20px;flex-wrap:wrap
+}
+.logo{font-weight:900;font-size:19px;color:#5944a8}
+.pill{
+  background:#ffffffb9;border:2px solid #fff;
+  border-radius:30px;padding:10px 16px;font-weight:800;
+  box-shadow:0 5px 14px #6754a522
+}
+.screen{display:none}
+.screen.active{display:block;animation:appear .35s ease}
+@keyframes appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card{
+  background:#ffffffed;border:3px solid #fff;border-radius:30px;
+  padding:clamp(20px,4vw,38px);
+  box-shadow:0 16px 35px #5944a833;
+}
+.hero{text-align:center;overflow:hidden;position:relative}
+.hero-art{
+  font-size:clamp(75px,15vw,135px);
+  line-height:1.3;
+  filter:drop-shadow(0 12px 5px #5745a344);
+  animation:float 3s ease-in-out infinite
+}
+@keyframes float{50%{transform:translateY(-10px) rotate(2deg)}}
+h1{font-size:clamp(30px,6vw,54px);margin:8px 0;color:#6548bb}
+h2{font-size:clamp(23px,4vw,32px);margin:8px 0 14px}
+p{line-height:1.6}
+.subtitle{font-size:18px;max-width:650px;margin:10px auto 22px}
+.btn{
+  border:0;border-radius:18px;padding:14px 22px;
+  font-weight:900;color:#fff;background:linear-gradient(135deg,#9272ed,#6249c6);
+  box-shadow:0 7px 0 #4f3b9e,0 12px 20px #6047b333;
+  transition:.15s;display:inline-block
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.btn:active{transform:translateY(4px);box-shadow:0 3px 0 #4f3b9e}
+.btn.secondary{background:linear-gradient(135deg,#ff9fbd,#f06d9d);box-shadow:0 7px 0 #c74e7c}
+.btn.soft{background:#e9e3ff;color:#5c48a9;box-shadow:0 5px 0 #c9baf3}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:22px 0}
+.choice{
+  background:#fff;border:3px solid #e8ddff;border-radius:22px;
+  padding:18px 12px;font-weight:900;color:#51417f;
+  box-shadow:0 7px 0 #d4c5f1;transition:.15s
+}
+.choice:hover{transform:translateY(-4px);border-color:#9c83ed}
+.choice .emoji{display:block;font-size:43px;margin-bottom:8px}
+.choice.selected{border-color:#7b61db;background:#f3efff}
+.progress-wrap{height:13px;background:#e9e2fb;border-radius:20px;overflow:hidden;margin:12px 0 22px}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#ff91b7,#8a70e8);transition:.3s}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:#f3efff;padding:9px 14px;border-radius:14px;font-weight:800}
+.scene-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.scene-art{
+  text-align:center;font-size:clamp(65px,13vw,105px);
+  padding:15px;background:linear-gradient(135deg,#e4f7ff,#f8e9ff);
+  border-radius:24px;margin:18px 0
+}
+.dialogue{
+  background:#fff4ce;border-left:6px solid #ffc84e;
+  padding:16px 20px;border-radius:15px;margin:15px 0
+}
+.question{font-size:20px;font-weight:900;margin:20px 0 12px}
+.answer-list{display:grid;gap:11px}
+.answer{
+  text-align:left;padding:15px 17px;border:2px solid #e3dcf6;
+  border-radius:16px;background:#fff;color:#40385f;font-weight:700;
+  transition:.15s
+}
+.answer:hover{border-color:#9479e8;background:#f7f3ff}
+.answer:disabled{cursor:default;opacity:1}
+.answer.correct{background:#e0f8e7;border-color:#57b978;color:#23663b}
+.answer.wrong{background:#ffe6e9;border-color:#ed8495;color:#963c4b}
+.feedback{padding:14px;border-radius:15px;margin-top:15px;font-weight:800;display:none}
+.feedback.show{display:block}
+.feedback.good{background:#e1f8e8;color:#246b3c}
+.feedback.bad{background:#fff0d8;color:#86551c}
+.actions{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:22px}
+.center{text-align:center}
+.small{font-size:14px;color:#716b88}
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:12px;margin:20px 0}
+.badge-item{background:#f5f0ff;border-radius:18px;padding:16px;text-align:center;font-weight:800}
+.badge-item span{display:block;font-size:34px;margin-bottom:6px}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;margin:20px 0}
+.map-item{
+  background:#f4f0ff;border:2px solid #e2d8ff;border-radius:20px;
+  padding:16px;text-align:center
+}
+.map-item .emoji{font-size:40px}
+.map-item strong{display:block;margin:8px 0}
+.map-item.done{background:#e7f8ec;border-color:#8bd3a0}
+.map-item.current{border-color:#8b6ce5;background:#fff}
+.footer{text-align:center;margin-top:20px;color:#62588c;font-size:13px}
+@media(max-width:550px){
+  #app{width:93%;padding-top:14px}
+  .card{border-radius:23px;padding:19px}
+  .actions .btn{width:100%}
+  .topbar{justify-content:center}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="logo">💗 КРАЇНА ДОБРИХ СЕРДЕЦЬ</div>
+    <div class="stats">
+      <div class="pill" id="classPill">Клас не обрано</div>
+      <div class="pill">⭐ <span id="scoreTop">0</span> балів</div>
+    </div>
+  </div>
 
-  box-shadow: 0 12px 35px rgba(36, 20, 65, 0.25);
-  transition: background 0.4s ease;
+  <section class="screen active" id="welcome">
+    <div class="card hero">
+      <div class="hero-art">🏰💖🌈</div>
+      <div class="small">Інтерактивна пригода до Дня доброти</div>
+      <h1>Країна добрих сердець</h1>
+      <p class="subtitle">На тебе чекає чарівна подорож! Допоможи мешканцям країни повернути доброту, дружбу та довіру.</p>
+      <p><strong>Для учнів 5, 6 і 7 класів</strong></p>
+      <button class="btn" onclick="showScreen('grade')">Почати пригоду 🚀</button>
+    </div>
+  </section>
+
+  <section class="screen" id="grade">
+    <div class="card center">
+      <div class="hero-art">🎒✨</div>
+      <h2>Обери свій клас</h2>
+      <p>Завдання будуть адаптовані до твого рівня.</p>
+      <div class="choices">
+        <button class="choice" onclick="chooseGrade(5,this)"><span class="emoji">🌱</span>5 клас</button>
+        <button class="choice" onclick="chooseGrade(6,this)"><span class="emoji">🌼</span>6 клас</button>
+        <button class="choice" onclick="chooseGrade(7,this)"><span class="emoji">🌟</span>7 клас</button>
+      </div>
+      <button class="btn soft" onclick="showScreen('welcome')">← Назад</button>
+    </div>
+  </section>
+
+  <section class="screen" id="intro">
+    <div class="card center">
+      <div class="hero-art">🧚‍♀️💌</div>
+      <h2>Таємничий лист</h2>
+      <div class="dialogue" id="introText"></div>
+      <p>Попереду 8 локацій. На кожній потрібно виконати завдання та зробити добрий вибір.</p>
+      <button class="btn" onclick="showScreen('map')">Вирушити в дорогу! 🗺️</button>
+    </div>
+  </section>
+
+  <section class="screen" id="map">
+    <div class="card">
+      <h2 class="center">🗺️ Мапа пригод</h2>
+      <p class="center">Відкривай локації одну за одною!</p>
+      <div class="progress-wrap"><div class="progress" id="mapProgress"></div></div>
+      <div class="map-grid" id="mapGrid"></div>
+      <div class="center"><button class="btn" id="mapStart" onclick="startScene()">Почати завдання ▶</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="game">
+    <div class="card">
+      <div class="scene-head">
+        <strong id="sceneNumber">Локація 1 із 8</strong>
+        <span class="pill" id="sceneScore">⭐ 0 балів</span>
+      </div>
+      <div class="progress-wrap"><div class="progress" id="gameProgress"></div></div>
+      <div class="scene-art" id="sceneArt">🌳</div>
+      <h2 id="sceneTitle"></h2>
+      <div class="dialogue" id="sceneStory"></div>
+      <div class="question" id="question"></div>
+      <div class="answer-list" id="answers"></div>
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+      <div class="actions">
+        <button class="btn soft" onclick="showScreen('map')">До мапи</button>
+        <button class="btn" id="nextButton" onclick="nextScene()" disabled>Далі →</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="result">
+    <div class="card center">
+      <div class="hero-art">🏆💖🎉</div>
+      <h1>Пригоду завершено!</h1>
+      <h2 id="resultTitle">Ти — творець доброти!</h2>
+      <p id="resultText"></p>
+      <div class="badge-grid" id="resultBadges"></div>
+      <div class="pill" style="display:inline-block;font-size:22px">⭐ Твій результат: <span id="finalScore">0</span> балів</div>
+      <p>Пам’ятай: навіть маленький добрий учинок може змінити чийсь день.</p>
+      <button class="btn" onclick="restart()">Зіграти ще раз 🔄</button>
+    </div>
+  </section>
+
+  <div class="footer">💗 День доброти • Здоров’я, безпека та добробут</div>
+</div>
+
+<script>
+const places = [
+  {name:"Містечко дружби",art:"🏘️🤝",story:"У містечку посварилися двоє друзів. Вони не можуть домовитися, що робити разом.",q:"Як найкраще допомогти друзям?",a:["Вислухати обох і запропонувати спокійно домовитися","Сказати, що один із них завжди неправий","Не звертати уваги та насміхатися"],correct:0,why:"Уміння слухати й домовлятися допомагає розв’язувати конфлікти."},
+  {name:"Ліс добрих слів",art:"🌳🦋",story:"У чарівному лісі зникли добрі слова. Звірята сумують і потребують підтримки.",q:"Які слова допоможуть підтримати друга?",a:["«Мені байдуже»","«Я тебе вислухаю. Чим можу допомогти?»","«Сам винен!»"],correct:1,why:"Підтримка починається з поваги, уваги та готовності вислухати."},
+  {name:"Міст взаємодопомоги",art:"🌉🧸",story:"На мосту ти зустрів людину, якій важко впоратися із завданням.",q:"Що варто зробити?",a:["Запропонувати допомогу, не нав’язуючи її","Виконати все замість людини без дозволу","Пройти повз і засудити"],correct:0,why:"Допомога має бути уважною та враховувати бажання іншої людини."},
+  {name:"Площа довіри",art:"🏙️🫶",story:"Хтось поділився з тобою особистою історією і попросив не поширювати її.",q:"Як правильно вчинити?",a:["Розповісти всім друзям","Опублікувати історію в мережі","Поважати приватність і не поширювати її"],correct:2,why:"Довіра пов’язана з повагою до приватності та особистих кордонів."},
+  {name:"Сад емпатії",art:"🌷🐝",story:"Новий учень у класі почувається самотньо й не знає, до кого приєднатися.",q:"Який учинок допоможе створити дружню атмосферу?",a:["Запросити приєднатися до спільної справи","Ігнорувати його","Жартувати з того, що він нікого не знає"],correct:0,why:"Запрошення до спільної діяльності допомагає людині відчути підтримку."},
+  {name:"Школа без образ",art:"🏫💬",story:"У класному чаті хтось написав образливе повідомлення про однокласника.",q:"Яка дія є найбільш відповідальною?",a:["Поширити повідомлення далі","Не підтримувати образи, підтримати того, кого образили, і звернутися до дорослого","Додати ще образливі коментарі"],correct:1,why:"Не можна підтримувати приниження. Важливо звернутися по допомогу до дорослого, якому довіряєш."},
+  {name:"Долина особистих кордонів",art:"🦄🛡️",story:"Твій знайомий наполягає, щоб ти зробив те, чого не хочеш.",q:"Як можна діяти?",a:["Погодитися лише через страх образити","Чітко й спокійно сказати «ні» та звернутися по підтримку, якщо тиснуть","Зробити це, щоб усім сподобатися"],correct:1,why:"Ти маєш право на власні кордони. Твоє «ні» потрібно поважати."},
+  {name:"Дерево доброти",art:"🌳💗✨",story:"Магічне дерево майже відновилося. Залишилося обрати, як продовжити добрі справи після пригоди.",q:"Що допоможе зробити доброту частиною щоденного життя?",a:["Робити добрі вчинки лише за винагороду","Помічати потреби інших, поважати людей і діяти відповідально","Чекати, поки хтось інший почне"],correct:1,why:"Доброта проявляється у щоденних діях, повазі та відповідальності."}
+];
+
+const levelQuestions = {
+  5: [
+    ["Що означає бути доброзичливим?",["Поважати інших і допомагати","Завжди перемагати","Командувати друзями"],0,"Доброзичливість — це повага, турбота та підтримка."],
+    ["Друг засмутився. Що можна зробити?",["Посміятися","Запитати, чи хоче він поговорити","Не помічати"],1,"Увага до почуттів інших допомагає підтримувати дружбу."],
+    ["Що робити, якщо тебе ображають?",["Мовчати про це завжди","Ображати у відповідь","Звернутися до дорослого, якому довіряєш"],2,"Просити допомоги — правильно. Ти не мусиш самостійно розв’язувати таку ситуацію."]
+  ],
+  6: [
+    ["Чому важливо вислухати обидві сторони конфлікту?",["Щоб зрозуміти ситуацію та почуття кожного","Щоб швидше звинуватити когось","Щоб уникнути розмови"],0,"Уважне слухання допомагає знайти справедливе рішення."],
+    ["Що є прикладом поваги до кордонів?",["Вимагати пароль від друга","Питати дозволу перед використанням чужої речі","Читати чужі повідомлення"],1,"Особисті речі та листування потребують поваги."],
+    ["Як підтримати однокласника, якого виключають зі спільної діяльності?",["Приєднатися до насмішок","Зробити вигляд, що нічого не відбувається","Запросити його до спільної справи й повідомити дорослого, якщо ситуація повторюється"],2,"Підтримка та звернення до дорослого можуть допомогти зупинити несправедливе ставлення."]
+  ],
+  7: [
+    ["Що відрізняє емпатію від простого співчуття?",["Спроба зрозуміти почуття та погляд іншої людини","Порада без вислуховування","Оцінювання людини за її емоціями"],0,"Емпатія допомагає зрозуміти переживання іншого без осуду."],
+    ["Яка дія є відповідальною в разі кібербулінгу?",["Переслати образливий допис","Зберегти докази, не поширювати їх і звернутися до дорослого","Відповісти образами"],1,"Важливо не підсилювати поширення образ і звернутися по допомогу."],
+    ["Що допомагає конструктивно розв’язати конфлікт?",["Звинувачення та погрози","Ігнорування потреб усіх учасників","Спокійний діалог, факти та пошук прийнятного рішення"],2,"Конструктивний діалог враховує потреби та права учасників."]
+  ]
+};
+
+let grade=5, score=0, current=0, answered=false, completed=[];
+let activeQuestion=null;
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
-.scene-art::after {
-  content: attr(data-symbol);
-  position: absolute;
-  right: 25px;
-  top: 20px;
-  font-size: clamp(70px, 12vw, 130px);
-  opacity: 0.75;
-  filter: drop-shadow(0 5px 12px #17172d80);
+function chooseGrade(g,el){
+  grade=g;score=0;current=0;completed=[];answered=false;
+  document.getElementById("classPill").textContent=g+" клас";
+  document.getElementById("scoreTop").textContent="0";
+  document.getElementById("introText").textContent=
+    "Привіт, мандрівнику "+g+" класу! Фея Добринка просить допомогти: у нашій країні зникло чарівне світло доброти. Тільки твої рішення можуть повернути його!";
+  showScreen("intro");
 }
 
-.scene-art .chapter {
-  position: relative;
-  z-index: 1;
-  background: rgba(25, 18, 48, 0.65);
-  border: 1px solid rgba(255,255,255,0.35);
-  padding: 10px 18px;
-  border-radius: 30px;
-  backdrop-filter: blur(8px);
+function makeMap(){
+  const grid=document.getElementById("mapGrid");
+  grid.innerHTML="";
+  places.forEach((p,i)=>{
+    const item=document.createElement("div");
+    item.className="map-item "+(completed.includes(i)?"done":i===current?"current":"");
+    item.innerHTML=`<div class="emoji">${completed.includes(i)?"✅":p.art}</div><strong>${i+1}. ${p.name}</strong><span class="small">${completed.includes(i)?"Виконано":i===current?"Доступно":"Ще попереду"}</span>`;
+    grid.appendChild(item);
+  });
+  document.getElementById("mapProgress").style.width=(completed.length/places.length*100)+"%";
+  document.getElementById("mapStart").textContent=current>=places.length?"Побачити результат 🏆":"Продовжити пригоду ▶";
 }
 
-.scene-art h2 {
-  position: relative;
-  z-index: 1;
-  font-size: clamp(28px, 4vw, 42px);
-  text-shadow: 0 3px 12px #17172d;
-  margin: 20px 0;
+function startScene(){
+  if(current>=places.length){finish();return;}
+  renderScene();
+  showScreen("game");
 }
 
-.dialogue {
-  background: linear-gradient(120deg, #f7edff, #e9f7ff);
-  border-left: 7px solid #ed55a5;
-  border-radius: 18px;
-  padding: 22px;
-  margin: 20px 0;
-  line-height: 1.65;
-  font-size: 18px;
-  box-shadow: 0 8px 25px rgba(70, 40, 100, 0.08);
+function getQuestion(index){
+  const base=places[index];
+  const extra=levelQuestions[grade][index%3];
+  if(index===7) return {q:extra[0],a:extra[1],correct:extra[2],why:extra[3]};
+  return base;
 }
 
-.task {
-  background: linear-gradient(145deg, #ffffff, #f7f1ff);
-  border: 2px solid #eadcf8;
-  border-radius: 20px;
-  padding: 22px;
-  margin: 18px 0;
-  box-shadow: 0 8px 25px rgba(70, 40, 100, 0.08);
+function renderScene(){
+  answered=false;
+  const p=places[current];
+  activeQuestion=getQuestion(current);
+  document.getElementById("sceneNumber").textContent=`Локація ${current+1} із ${places.length}`;
+  document.getElementById("sceneScore").textContent="⭐ "+score+" балів";
+  document.getElementById("gameProgress").style.width=(current/places.length*100)+"%";
+  document.getElementById("sceneArt").textContent=p.art;
+  document.getElementById("sceneTitle").textContent=p.name;
+  document.getElementById("sceneStory").textContent=p.story;
+  document.getElementById("question").textContent=activeQuestion.q;
+  document.getElementById("feedback").className="feedback";
+  document.getElementById("feedback").textContent="";
+  document.getElementById("nextButton").disabled=true;
+  const list=document.getElementById("answers");
+  list.innerHTML="";
+  activeQuestion.a.forEach((answer,i)=>{
+    const btn=document.createElement("button");
+    btn.className="answer";
+    btn.textContent=["А","Б","В"][i]+". "+answer;
+    btn.onclick=()=>checkAnswer(i,btn);
+    list.appendChild(btn);
+  });
 }
 
-.answer {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 16px 18px;
-  border-radius: 14px;
-  margin: 10px 0;
-  background: #eee9fa;
-  color: #292541;
-  border: 2px solid transparent;
-  line-height: 1.5;
-  transition: 0.2s;
+function checkAnswer(i,btn){
+  if(answered)return;
+  answered=true;
+  const correct=i===activeQuestion.correct;
+  document.querySelectorAll(".answer").forEach((b,j)=>{
+    b.disabled=true;
+    if(j===activeQuestion.correct)b.classList.add("correct");
+  });
+  const feedback=document.getElementById("feedback");
+  feedback.className="feedback show "+(correct?"good":"bad");
+  if(correct){
+    score+=10;
+    feedback.textContent="🌟 Правильно! +10 балів. "+activeQuestion.why;
+  }else{
+    btn.classList.add("wrong");
+    feedback.textContent="💡 Спробуй запам’ятати: "+activeQuestion.why;
+  }
+  completed.push(current);
+  document.getElementById("scoreTop").textContent=score;
+  document.getElementById("sceneScore").textContent="⭐ "+score+" балів";
+  document.getElementById("nextButton").disabled=false;
 }
 
-.answer:hover {
-  transform: translateX(4px);
-  border-color: #a66bd1;
-  background: #f7eaff;
+function nextScene(){
+  if(!answered)return;
+  current++;
+  if(current>=places.length){finish();return;}
+  makeMap();
+  showScreen("map");
 }
 
-.answer.correct {
-  background: #dff8ed;
-  border-color: #35b98b;
+function finish(){
+  document.getElementById("finalScore").textContent=score;
+  let title,text;
+  if(score>=70){
+    title="Супергерой доброти! 🦸";
+    text="Ти продемонстрував уважність, повагу та готовність підтримувати інших!";
+  }else if(score>=40){
+    title="Друг із великим серцем! 💗";
+    text="Ти зробив багато добрих виборів. Продовжуй тренувати уважність та емпатію!";
+  }else{
+    title="Початківець добрих справ! 🌱";
+    text="Кожна пригода навчає нас. Спробуй ще раз і відкрий для себе нові способи підтримувати людей!";
+  }
+  document.getElementById("resultTitle").textContent=title;
+  document.getElementById("resultText").textContent=text;
+  document.getElementById("resultBadges").innerHTML=
+    `<div class="badge-item"><span>🤝</span>Дружба</div>
+     <div class="badge-item"><span>💬</span>Добрі слова</div>
+     <div class="badge-item"><span>🛡️</span>Повага до кордонів</div>
+     <div class="badge-item"><span>💖</span>Емпатія</div>`;
+  showScreen("result");
 }
 
-.answer.wrong {
-  background: #ffe7e8;
-  border-color: #e77b85;
+function restart(){
+  score=0;current=0;completed=[];
+  document.getElementById("scoreTop").textContent="0";
+  makeMap();
+  showScreen("welcome");
 }
+makeMap();
+</script>
+</body>
+</html>
